@@ -12,8 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 
 const val VIEW_MODEL = "viewModel"
 class PageFragment : Fragment() {
-    private var reload = true
-
     interface ControlActions {
         fun back()
         fun forward()
@@ -30,12 +28,12 @@ class PageFragment : Fragment() {
     ): View? = inflater.inflate(R.layout.fragment_page, container, false).apply {
         webView = findViewById(R.id.webView)
         webView.settings.javaScriptEnabled = true
+
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                reload = false
-                viewModel.setLink(url)
-                reload = true
+                viewModel.setVisibleLink(url)
+                Log.d("PageFragment", "Returned URL: $url")
             }
         }
 
@@ -43,8 +41,8 @@ class PageFragment : Fragment() {
             webView.restoreState(savedInstanceState)
         } else {
             viewModel.getLink().observe(requireActivity()) {
-                if (reload)
-                    webView.loadUrl(it)
+                webView.loadUrl(sanitizeUrl(it))
+                Log.d("PageFragment", "Loading URL: $it")
             }
         }
     }
@@ -55,12 +53,23 @@ class PageFragment : Fragment() {
         }
     }
     fun forward() {
-        if (webView.canGoForward())
+        if (webView.canGoForward()) {
             webView.goForward()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         webView.saveState(outState)
+    }
+
+    fun sanitizeUrl(url: String): String {
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url
+        } else if(url.matches(Regex(".+\\..+"))) {
+            return "https://$url"
+        }
+        return "https://duckduckgo.com/?q=${url.replace(" ", "+")}"
+
     }
 }

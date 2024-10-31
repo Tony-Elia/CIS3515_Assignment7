@@ -30,7 +30,7 @@ class ControlFragment : Fragment() {
                 controlActions.forward()
             }
 
-            viewModel.getLink().observe(requireActivity()) {
+            viewModel.getVisibleLink().observe(requireActivity()) {
                 findViewById<TextInputEditText>(R.id.text).setText(it)
             }
         }

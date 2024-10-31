@@ -1,22 +1,26 @@
 package edu.temple.browsr
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
+
 class LinkViewModel : ViewModel() {
-    private val link = MutableLiveData<String>("https://www.google.com")
+    val default_site = "https://www.google.com"
+    private val link = MutableLiveData<String>(default_site)
+    private val visible_link = MutableLiveData<String>(default_site)
 
     fun setLink(url: String?) {
-        var _link = url?: "";
-        if(_link.matches(Regex("^[a-zA-Z0-9-]+\\\\.[a-zA-Z]{2,}\$"))) {
-            _link = "https://$url"
-        } else {
-            _link.replace(" ", "+")
-            _link = "https://duckduckgo.com/?q=$_link&t=h_&ia=web"
-        }
-        link.value = _link
+        link.value = url
+        Log.d("LinkViewModel", "Set link to: ${link.value}")
     }
 
     fun getLink(): LiveData<String> = link
+
+    fun setVisibleLink(url: String?) {
+        visible_link.value = url
+    }
+
+    fun getVisibleLink(): LiveData<String> = visible_link
 }
