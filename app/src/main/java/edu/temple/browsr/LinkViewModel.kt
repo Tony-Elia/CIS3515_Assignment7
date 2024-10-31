@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class LinkViewModel : ViewModel() {
     private val link = MutableLiveData<String>("https://www.google.com")
 
-    fun setLink(url: String) {
+    fun setLink(url: String?) {
         link.value = url
     }
 
