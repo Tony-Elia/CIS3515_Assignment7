@@ -19,7 +19,7 @@ class ControlFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_control, container, false).apply {
-            val controlActions = requireActivity() as PageFragment.controlActions
+            val controlActions = requireActivity() as PageFragment.ControlActions
             findViewById<View>(R.id.go).setOnClickListener {
                 viewModel.setLink(findViewById<TextInputEditText>(R.id.text).text.toString())
             }
@@ -28,6 +28,10 @@ class ControlFragment : Fragment() {
             }
             findViewById<View>(R.id.forward).setOnClickListener {
                 controlActions.forward()
+            }
+
+            viewModel.getLink().observe(requireActivity()) {
+                findViewById<TextInputEditText>(R.id.text).setText(it)
             }
         }
     }

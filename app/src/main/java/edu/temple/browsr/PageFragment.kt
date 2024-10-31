@@ -10,10 +10,11 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 
+const val VIEW_MODEL = "viewModel"
 class PageFragment : Fragment() {
     private var reload = true
 
-    interface controlActions {
+    interface ControlActions {
         fun back()
         fun forward()
     }
@@ -28,7 +29,6 @@ class PageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_page, container, false).apply {
         webView = findViewById(R.id.webView)
-
         webView.settings.javaScriptEnabled = true
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -39,11 +39,15 @@ class PageFragment : Fragment() {
             }
         }
 
+        if(savedInstanceState != null) {
+            webView.restoreState(savedInstanceState)
+        } else {
             viewModel.getLink().observe(requireActivity()) {
                 if (reload)
                     webView.loadUrl(it)
             }
         }
+    }
 
     fun back() {
         if (webView.canGoBack()) {
@@ -53,5 +57,10 @@ class PageFragment : Fragment() {
     fun forward() {
         if (webView.canGoForward())
             webView.goForward()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        webView.saveState(outState)
     }
 }
