@@ -8,7 +8,14 @@ class LinkViewModel : ViewModel() {
     private val link = MutableLiveData<String>("https://www.google.com")
 
     fun setLink(url: String?) {
-        link.value = url
+        var _link = url?: "";
+        if(_link.matches(Regex("^[a-zA-Z0-9-]+\\\\.[a-zA-Z]{2,}\$"))) {
+            _link = "https://$url"
+        } else {
+            _link.replace(" ", "+")
+            _link = "https://duckduckgo.com/?q=$_link&t=h_&ia=web"
+        }
+        link.value = _link
     }
 
     fun getLink(): LiveData<String> = link
